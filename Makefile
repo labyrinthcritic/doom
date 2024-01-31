@@ -2,7 +2,7 @@ CC=gcc  # gcc or g++
 
 CFLAGS=-g -Wall -DNORMALUNIX -DLINUX # -DUSEASM 
 LDFLAGS=-L/usr/X11R6/lib
-LIBS=-lnsl -lm
+LIBS=-lSDL2 -lnsl -lm
 
 SRC=src
 O=build
