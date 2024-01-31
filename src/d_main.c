@@ -24,7 +24,6 @@
 //
 //-----------------------------------------------------------------------------
 
-
 #define BGCOLOR 7
 #define FGCOLOR 8
 
@@ -147,7 +146,8 @@ void D_ProcessEvents(void) {
   if ((gamemode == commercial) && (W_CheckNumForName("map01") < 0))
     return;
 
-  for (; eventtail != eventhead; eventtail = (eventtail + 1) & (MAXEVENTS - 1)) {
+  for (; eventtail != eventhead;
+       eventtail = (eventtail + 1) & (MAXEVENTS - 1)) {
     ev = &events[eventtail];
     if (M_Responder(ev))
       continue; // menu ate the event

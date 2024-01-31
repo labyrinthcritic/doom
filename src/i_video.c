@@ -21,17 +21,16 @@
 //
 //-----------------------------------------------------------------------------
 
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <unistd.h>
 
+#include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
-#include <X11/XKBlib.h>
 
 #include <X11/extensions/XShm.h>
 // Had to dig up XShm.c for this one.
@@ -97,12 +96,8 @@ int xlatekey(void) {
 
   int rc;
 
-  rc = XkbKeycodeToKeysym(
-    X_display,
-    X_event.xkey.keycode,
-    0,
-    X_event.xkey.state & ShiftMask ? 1 : 0
-  );
+  rc = XkbKeycodeToKeysym(X_display, X_event.xkey.keycode, 0,
+                          X_event.xkey.state & ShiftMask ? 1 : 0);
 
   switch (rc) {
   case XK_Left:

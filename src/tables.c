@@ -35,7 +35,6 @@
 //
 //-----------------------------------------------------------------------------
 
-
 #include "tables.h"
 
 int SlopeDiv(unsigned num, unsigned den) {
