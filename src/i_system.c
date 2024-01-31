@@ -111,6 +111,8 @@ void I_BeginRead(void) {}
 
 void I_EndRead(void) {}
 
+void I_StartTic(void) {}
+
 byte *I_AllocLow(int length) {
   byte *mem;
 
