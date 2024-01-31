@@ -522,7 +522,7 @@ void P_GroupLines(void) {
 //
 void P_SetupLevel(int episode, int map, int playermask, skill_t skill) {
   int i;
-  char lumpname[9];
+  char lumpname[20];
   int lumpnum;
 
   totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;

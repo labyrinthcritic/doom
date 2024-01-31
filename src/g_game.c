@@ -405,8 +405,8 @@ void G_DoLoadLevel(void) {
 
   // DOOM determines the sky texture to be used
   // depending on the current episode, and the game version.
-  if ((gamemode == commercial) || (gamemode == pack_tnt) ||
-      (gamemode == pack_plut)) {
+  if ((gamemode == commercial) || ((int)gamemode == pack_tnt) ||
+      ((int)gamemode == pack_plut)) {
     skytexture = R_TextureNumForName("SKY3");
     if (gamemap < 12)
       skytexture = R_TextureNumForName("SKY1");
@@ -438,8 +438,8 @@ void G_DoLoadLevel(void) {
   joyxmove = joyymove = 0;
   mousex = mousey = 0;
   sendpause = sendsave = paused = false;
-  memset(mousebuttons, 0, sizeof(mousebuttons));
-  memset(joybuttons, 0, sizeof(joybuttons));
+  memset(mousebuttons, 0, sizeof(mousearray) - sizeof(*mousearray));
+  memset(joybuttons, 0, sizeof(joyarray) - sizeof(*joyarray));
 }
 
 //
@@ -676,11 +676,6 @@ void G_Ticker(void) {
 // Called by the game initialization functions.
 //
 void G_InitPlayer(int player) {
-  player_t *p;
-
-  // set up the saved info
-  p = &players[player];
-
   // clear everything else to defaults
   G_PlayerReborn(player);
 }
@@ -1058,20 +1053,19 @@ void G_LoadGame(char *name) {
 #define VERSIONSIZE 16
 
 void G_DoLoadGame(void) {
-  int length;
   int i;
   int a, b, c;
   char vcheck[VERSIONSIZE];
 
   gameaction = ga_nothing;
 
-  length = M_ReadFile(savename, &savebuffer);
+  M_ReadFile(savename, &savebuffer);
   save_p = savebuffer + SAVESTRINGSIZE;
 
   // skip the description field
   memset(vcheck, 0, sizeof(vcheck));
   sprintf(vcheck, "version %i", VERSION);
-  if (strcmp(save_p, vcheck))
+  if (strcmp((char *)save_p, vcheck))
     return; // bad version
   save_p += VERSIONSIZE;
 

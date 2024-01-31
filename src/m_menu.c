@@ -358,7 +358,6 @@ menu_t SaveDef = {load_end, &MainDef, SaveMenu, M_DrawSave, 80, 54, 0};
 //
 void M_ReadSaveStrings(void) {
   int handle;
-  int count;
   int i;
   char name[256];
 
@@ -374,7 +373,7 @@ void M_ReadSaveStrings(void) {
       LoadMenu[i].status = 0;
       continue;
     }
-    count = read(handle, &savegamestrings[i], SAVESTRINGSIZE);
+    read(handle, &savegamestrings[i], SAVESTRINGSIZE);
     close(handle);
     LoadMenu[i].status = 1;
   }
@@ -499,7 +498,7 @@ void M_SaveGame(int choice) {
 //
 //      M_QuickSave
 //
-char tempstring[80];
+char tempstring[90];
 
 void M_QuickSaveResponse(int ch) {
   if (ch == 'y') {

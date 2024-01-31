@@ -397,8 +397,6 @@ void W_ReadLump(int lump, void *dest) {
 // W_CacheLumpNum
 //
 void *W_CacheLumpNum(int lump, int tag) {
-  byte *ptr;
-
   if ((unsigned)lump >= numlumps)
     I_Error("W_CacheLumpNum: %i >= numlumps", lump);
 
@@ -406,7 +404,8 @@ void *W_CacheLumpNum(int lump, int tag) {
     // read the lump in
 
     // printf ("cache miss on lump %i\n",lump);
-    ptr = Z_Malloc(W_LumpLength(lump), tag, &lumpcache[lump]);
+    // TODO: memory leak?
+    Z_Malloc(W_LumpLength(lump), tag, &lumpcache[lump]);
     W_ReadLump(lump, lumpcache[lump]);
   } else {
     // printf ("cache hit on lump %i\n",lump);
