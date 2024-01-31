@@ -32,6 +32,15 @@
 
 #include "doomdef.h"
 
+typedef struct {
+  byte red;
+  byte green;
+  byte blue;
+} color_t;
+
+// The color palette.
+color_t palette[256];
+
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 
@@ -88,9 +97,35 @@ void I_FinishUpdate(void) {
 
   SDL_SetRenderDrawColor(renderer, 41, 207, 157, 255);
   SDL_RenderClear(renderer);
+
+  // draw screens[0]
+
+  for (int i = 0; i < SCREENWIDTH; i++) {
+    for (int j = 0; j < SCREENHEIGHT; j++) {
+      int pixel_index = (j * SCREENWIDTH + i);
+
+      byte palette_index = screens[0][pixel_index];
+      SDL_SetRenderDrawColor(renderer, palette[palette_index].red,
+                             palette[palette_index].green,
+                             palette[palette_index].blue, 255);
+      SDL_RenderDrawPoint(renderer, i, j);
+    }
+  }
+
   SDL_RenderPresent(renderer);
 }
 
-void I_ReadScreen(byte *scr) {}
+void I_ReadScreen(byte *scr) {
+  memcpy(scr, screens[0], SCREENWIDTH * SCREENHEIGHT);
+}
 
-void I_SetPalette(byte *palette) {}
+void I_SetPalette(byte *pal) {
+  for (int i = 0; i < 256; i++) {
+    byte red = gammatable[usegamma][*pal++];
+    palette[i].red = (red << 8) + red;
+    byte green = gammatable[usegamma][*pal++];
+    palette[i].green = (green << 8) + green;
+    byte blue = gammatable[usegamma][*pal++];
+    palette[i].blue = (blue << 8) + blue;
+  }
+}
