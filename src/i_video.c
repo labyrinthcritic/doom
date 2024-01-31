@@ -43,6 +43,7 @@ color_t palette[256];
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
+SDL_Texture *screen_texture = NULL;
 
 void I_InitGraphics(void) {
   signal(SIGINT, (void (*)(int))I_Quit);
@@ -54,7 +55,7 @@ void I_InitGraphics(void) {
   }
 
   window = SDL_CreateWindow("DOOM", SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED, 320, 200, SDL_WINDOW_SHOWN);
+                            SDL_WINDOWPOS_CENTERED, 960, 720, SDL_WINDOW_SHOWN);
 
   if (window == NULL) {
     fprintf(stderr, "Could not create window.");
@@ -69,9 +70,19 @@ void I_InitGraphics(void) {
     fprintf(stderr, "Could not create renderer.");
     fprintf(stderr, "%s\n", SDL_GetError());
   }
+
+  screen_texture =
+      SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+                        SDL_TEXTUREACCESS_STREAMING, SCREENWIDTH, SCREENHEIGHT);
+  if (screen_texture == NULL) {
+    fprintf(stderr, "Could not create screen texture.");
+    fprintf(stderr, "%s\n", SDL_GetError());
+  }
 }
 
 void I_ShutdownGraphics(void) {
+  SDL_DestroyTexture(screen_texture);
+  screen_texture = NULL;
   SDL_DestroyRenderer(renderer);
   renderer = NULL;
   SDL_DestroyWindow(window);
@@ -100,18 +111,32 @@ void I_FinishUpdate(void) {
 
   // draw screens[0]
 
+  int *pixels;
+  int pitch;
+  if (SDL_LockTexture(screen_texture, NULL, (void *)&pixels, &pitch) != 0) {
+    fprintf(stderr, "Failed to lock screen texture.");
+  }
+
   for (int i = 0; i < SCREENWIDTH; i++) {
     for (int j = 0; j < SCREENHEIGHT; j++) {
       int pixel_index = (j * SCREENWIDTH + i);
 
       byte palette_index = screens[0][pixel_index];
-      SDL_SetRenderDrawColor(renderer, palette[palette_index].red,
-                             palette[palette_index].green,
-                             palette[palette_index].blue, 255);
-      SDL_RenderDrawPoint(renderer, i, j);
+      int pixel = 0;
+      pixel |= palette[palette_index].blue;
+      pixel |= palette[palette_index].green << 8;
+      pixel |= palette[palette_index].red << 16;
+      pixel |= 255 << 24;
+      pixels[pixel_index] = pixel;
+      // SDL_SetRenderDrawColor(renderer, palette[palette_index].red,
+      //                        palette[palette_index].green,
+      //                        palette[palette_index].blue, 255);
+      // SDL_RenderDrawPoint(renderer, i, j);
     }
   }
 
+  SDL_UnlockTexture(screen_texture);
+  SDL_RenderCopy(renderer, screen_texture, NULL, NULL);
   SDL_RenderPresent(renderer);
 }
 
