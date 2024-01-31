@@ -27,14 +27,12 @@
 #define BGCOLOR 7
 #define FGCOLOR 8
 
-#ifdef NORMALUNIX
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif
 
 #include "doomdef.h"
 #include "doomstat.h"
@@ -497,7 +495,6 @@ void IdentifyVersion(void) {
   char *plutoniawad;
   char *tntwad;
 
-#ifdef NORMALUNIX
   char *home;
   char *doomwaddir;
   doomwaddir = getenv("DOOMWADDIR");
@@ -536,7 +533,6 @@ void IdentifyVersion(void) {
   if (!home)
     I_Error("Please set $HOME to your home directory");
   sprintf(basedefault, "%s/.doomrc", home);
-#endif
 
   if (M_CheckParm("-shdev")) {
     gamemode = shareware;

@@ -1,7 +1,6 @@
 CC=gcc  # gcc or g++
 
-CFLAGS=-g -Wall -DNORMALUNIX -DLINUX # -DUSEASM 
-LDFLAGS=-L/usr/X11R6/lib
+CFLAGS=-g -Wall
 LIBS=-lSDL2 -lnsl -lm
 
 SRC=src
@@ -76,7 +75,7 @@ clean:
 	rm -rf $(O)
 
 $(O)/doom: $(OBJS) $(O)/i_main.o
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
+	$(CC) $(CFLAGS) $(OBJS) $(O)/i_main.o \
 	-o $(O)/doom $(LIBS)
 
 $(O)/%.o: $(SRC)/%.c

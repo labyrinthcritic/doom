@@ -31,10 +31,6 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-#ifndef LINUX
-#include <sys/filio.h>
-#endif
-
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>

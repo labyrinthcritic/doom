@@ -21,7 +21,6 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifdef NORMALUNIX
 #include <alloca.h>
 #include <ctype.h>
 #include <fcntl.h>
@@ -31,7 +30,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #define O_BINARY 0
-#endif
 
 #include "doomtype.h"
 #include "i_system.h"
