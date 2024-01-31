@@ -64,8 +64,7 @@ void I_InitGraphics(void) {
     exit(1);
   }
 
-  renderer = SDL_CreateRenderer(
-      window, -1, SDL_RENDERER_ACCELERATED);
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
   if (renderer == NULL) {
     fprintf(stderr, "Could not create renderer.");
@@ -132,7 +131,8 @@ int TranslateKey(SDL_Keycode code) {
     return ' ';
   }
 
-  const char *characters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.";
+  const char *characters =
+      " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.";
 
   for (int i = 0; i < strlen(characters); i++) {
     if (code == characters[i]) {
