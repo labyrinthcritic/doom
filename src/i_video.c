@@ -22,6 +22,7 @@
 //-----------------------------------------------------------------------------
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_keycode.h>
 #include <signal.h>
 
 #include "d_main.h"
@@ -98,11 +99,57 @@ void I_UpdateNoBlit(void) {
   // what is this?
 }
 
+int TranslateKey(SDL_Keycode code) {
+  switch (code) {
+  case SDLK_RETURN:
+    return KEY_ENTER;
+  case SDLK_ESCAPE:
+    return KEY_ESCAPE;
+  case SDLK_UP:
+    return KEY_UPARROW;
+  case SDLK_DOWN:
+    return KEY_DOWNARROW;
+  case SDLK_LEFT:
+    return KEY_LEFTARROW;
+  case SDLK_RIGHT:
+    return KEY_RIGHTARROW;
+  case SDLK_LCTRL:
+  case SDLK_RCTRL:
+    return KEY_RCTRL;
+  case SDLK_LSHIFT:
+  case SDLK_RSHIFT:
+    return KEY_RSHIFT;
+  case SDLK_LALT:
+  case SDLK_RALT:
+    return KEY_RALT;
+  case SDLK_TAB:
+    return KEY_TAB;
+  case SDLK_MINUS:
+    return KEY_MINUS;
+  case SDLK_EQUALS:
+    return KEY_EQUALS;
+  case SDLK_SPACE:
+    return ' ';
+  }
+
+  return -1;
+}
+
 void I_FinishUpdate(void) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_QUIT) {
       I_Quit();
+    } else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+      int key;
+      if ((key = TranslateKey(event.key.keysym.sym)) != -1) {
+        event_t doom_event;
+        doom_event.type = (event.type == SDL_KEYDOWN ? ev_keydown : ev_keyup);
+        doom_event.data1 = key;
+        doom_event.data2 = 0;
+        doom_event.data3 = 0;
+        D_PostEvent(&doom_event);
+      }
     }
   }
 
