@@ -46,58 +46,6 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *screen_texture = NULL;
 
-void I_InitGraphics(void) {
-  signal(SIGINT, (void (*)(int))I_Quit);
-
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    fprintf(stderr, "Could not initialize SDL2.");
-    fprintf(stderr, "%s\n", SDL_GetError());
-    exit(1);
-  }
-
-  window = SDL_CreateWindow("DOOM", SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED, 960, 720, SDL_WINDOW_SHOWN);
-
-  if (window == NULL) {
-    fprintf(stderr, "Could not create window.");
-    fprintf(stderr, "%s\n", SDL_GetError());
-    exit(1);
-  }
-
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-  if (renderer == NULL) {
-    fprintf(stderr, "Could not create renderer.");
-    fprintf(stderr, "%s\n", SDL_GetError());
-  }
-
-  screen_texture =
-      SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                        SDL_TEXTUREACCESS_STREAMING, SCREENWIDTH, SCREENHEIGHT);
-  if (screen_texture == NULL) {
-    fprintf(stderr, "Could not create screen texture.");
-    fprintf(stderr, "%s\n", SDL_GetError());
-  }
-}
-
-void I_ShutdownGraphics(void) {
-  SDL_DestroyTexture(screen_texture);
-  screen_texture = NULL;
-  SDL_DestroyRenderer(renderer);
-  renderer = NULL;
-  SDL_DestroyWindow(window);
-  window = NULL;
-  SDL_Quit();
-}
-
-void I_StartFrame(void) {
-  // er?
-}
-
-void I_UpdateNoBlit(void) {
-  // what is this?
-}
-
 int TranslateKey(SDL_Keycode code) {
   switch (code) {
   case SDLK_RETURN:
@@ -143,7 +91,7 @@ int TranslateKey(SDL_Keycode code) {
   return -1;
 }
 
-void I_FinishUpdate(void) {
+void ProcessEvents(void) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_QUIT) {
@@ -160,10 +108,9 @@ void I_FinishUpdate(void) {
       }
     }
   }
+}
 
-  SDL_SetRenderDrawColor(renderer, 41, 207, 157, 255);
-  SDL_RenderClear(renderer);
-
+void DrawToScreen(void) {
   // draw screens[0]
 
   int *pixels;
@@ -193,6 +140,62 @@ void I_FinishUpdate(void) {
   SDL_UnlockTexture(screen_texture);
   SDL_RenderCopy(renderer, screen_texture, NULL, NULL);
   SDL_RenderPresent(renderer);
+}
+
+void I_InitGraphics(void) {
+  signal(SIGINT, (void (*)(int))I_Quit);
+
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    fprintf(stderr, "Could not initialize SDL2.");
+    fprintf(stderr, "%s\n", SDL_GetError());
+    exit(1);
+  }
+
+  window = SDL_CreateWindow("DOOM", SDL_WINDOWPOS_CENTERED,
+                            SDL_WINDOWPOS_CENTERED, 960, 720, SDL_WINDOW_SHOWN);
+
+  if (window == NULL) {
+    fprintf(stderr, "Could not create window.");
+    fprintf(stderr, "%s\n", SDL_GetError());
+    exit(1);
+  }
+
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+  if (renderer == NULL) {
+    fprintf(stderr, "Could not create renderer.");
+    fprintf(stderr, "%s\n", SDL_GetError());
+  }
+
+  screen_texture =
+      SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+                        SDL_TEXTUREACCESS_STREAMING, SCREENWIDTH, SCREENHEIGHT);
+  if (screen_texture == NULL) {
+    fprintf(stderr, "Could not create screen texture.");
+    fprintf(stderr, "%s\n", SDL_GetError());
+  }
+}
+
+void I_ShutdownGraphics(void) {
+  SDL_DestroyTexture(screen_texture);
+  screen_texture = NULL;
+  SDL_DestroyRenderer(renderer);
+  renderer = NULL;
+  SDL_DestroyWindow(window);
+  window = NULL;
+  SDL_Quit();
+}
+
+void I_StartFrame(void) {
+  ProcessEvents();
+}
+
+void I_UpdateNoBlit(void) {
+  // what is this?
+}
+
+void I_FinishUpdate(void) {
+  DrawToScreen();
 }
 
 void I_ReadScreen(byte *scr) {
